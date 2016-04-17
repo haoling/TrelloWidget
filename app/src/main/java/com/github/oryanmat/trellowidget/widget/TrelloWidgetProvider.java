@@ -20,6 +20,7 @@ import com.github.oryanmat.trellowidget.util.PrefUtil;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS;
+import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setBackground;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setImageViewColor;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setTextView;
 
@@ -41,6 +42,7 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
         BoardList list = TrelloWidget.getList(context, appWidgetId);
         Board board = TrelloWidget.getBoard(context, appWidgetId);
         @ColorInt int color = PrefUtil.getForegroundColor(context);
+        @ColorInt int bgcolor = PrefUtil.getBackgroundColor(context);
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.trello_widget);
         setTextView(views, R.id.list_title, list.name, color);
@@ -54,7 +56,8 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
         views.setRemoteAdapter(R.id.card_list, getRemoteAdapterIntent(context, appWidgetId));
         views.setEmptyView(R.id.card_list, R.id.empty_card_list);
         views.setTextColor(R.id.empty_card_list, color);
-        setImageViewColor(views, R.id.background_image, PrefUtil.getBackgroundColor(context));
+        setBackground(views, R.id.card_frame, bgcolor);
+        setBackground(views, R.id.title_bar, bgcolor);
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

@@ -55,6 +55,10 @@ public class RemoteViewsUtil {
         views.setInt(view, METHOD_SET_ALPHA, alpha(color));
     }
 
+    public static void setBackground(RemoteViews views, @IdRes int view, @ColorInt int color) {
+        views.setInt(view, "setBackgroundColor", color);
+    }
+
     public static float getScaledValue(Context context, @DimenRes int dimen) {
         float dimension = context.getResources().getDimension(dimen);
         float density = context.getResources().getDisplayMetrics().density;
