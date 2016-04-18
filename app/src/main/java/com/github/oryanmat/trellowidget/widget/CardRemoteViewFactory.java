@@ -52,7 +52,7 @@ public class CardRemoteViewFactory implements RemoteViewsService.RemoteViewsFact
     public void onDataSetChanged() {
         BoardList list = TrelloWidget.getList(context, appWidgetId);
         CardArray cardArray = TrelloAPIUtil.instance.getCards(list);
-        color = PrefUtil.getForegroundColor(context);
+        color = PrefUtil.getCardForegroundColor(context);
 
         if (!CardArray.ERROR.equals(cardArray.id)) {
             cards = Arrays.asList(cardArray.cards);

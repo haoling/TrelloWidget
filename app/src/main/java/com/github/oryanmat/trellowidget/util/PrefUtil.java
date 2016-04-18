@@ -21,15 +21,25 @@ public class PrefUtil {
                         context.getString(R.string.pref_update_interval_default)));
     }
 
-    public static @ColorInt int getBackgroundColor(Context context) {
+    public static @ColorInt int getCardBackgroundColor(Context context) {
         return getColor(context, context.getString(R.string.pref_back_color_key),
                 context.getResources().getInteger(R.integer.pref_back_color_default));
     }
 
-    public static @ColorInt int getForegroundColor(Context context) {
+    public static @ColorInt int getCardForegroundColor(Context context) {
         return getColor(context, context.getString(R.string.pref_fore_color_key),
                 context.getResources().getInteger(R.integer.pref_fore_color_default));
     }
+    public static @ColorInt int getTitleBackgroundColor(Context context) {
+        return getColor(context, context.getString(R.string.pref_title_back_color_key),
+                context.getResources().getInteger(R.integer.pref_title_back_color_default));
+    }
+
+    public static @ColorInt int getTitleForegroundColor(Context context) {
+        return getColor(context, context.getString(R.string.pref_title_fore_color_key),
+                context.getResources().getInteger(R.integer.pref_title_fore_color_default));
+    }
+
 
     public static @ColorInt int getColor(Context context, String key, int defValue) {
         return getDefaultSharedPreferences(context).getInt(key, defValue);
