@@ -26,6 +26,13 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_title_fore_color_key));
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_title_use_unique_color_key));
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_update_interval_key));
+
+        ColorPreference titleBgPref = (ColorPreference) findPreference(getString(R.string.pref_title_back_color_key));
+        ColorPreference cardBgPref = (ColorPreference) findPreference(getString(R.string.pref_back_color_key));
+        titleBgPref.setCopyFrom(cardBgPref);
+        ColorPreference titleFgPref = (ColorPreference) findPreference(getString(R.string.pref_title_fore_color_key));
+        ColorPreference cardFgPref = (ColorPreference) findPreference(getString(R.string.pref_fore_color_key));
+        titleFgPref.setCopyFrom(cardFgPref);
     }
 
     @Override
