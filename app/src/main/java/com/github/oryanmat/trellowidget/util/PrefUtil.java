@@ -31,18 +31,29 @@ public class PrefUtil {
                 context.getResources().getInteger(R.integer.pref_fore_color_default));
     }
     public static @ColorInt int getTitleBackgroundColor(Context context) {
-        return getColor(context, context.getString(R.string.pref_title_back_color_key),
-                context.getResources().getInteger(R.integer.pref_title_back_color_default));
+        if (isTitleUniqueColor(context)) {
+            return getColor(context, context.getString(R.string.pref_title_back_color_key),
+                    context.getResources().getInteger(R.integer.pref_title_back_color_default));
+        }
+        return getCardBackgroundColor(context);
     }
 
     public static @ColorInt int getTitleForegroundColor(Context context) {
-        return getColor(context, context.getString(R.string.pref_title_fore_color_key),
-                context.getResources().getInteger(R.integer.pref_title_fore_color_default));
+        if (isTitleUniqueColor(context)) {
+            return getColor(context, context.getString(R.string.pref_title_fore_color_key),
+                    context.getResources().getInteger(R.integer.pref_title_fore_color_default));
+        }
+        return getCardForegroundColor(context);
     }
-
 
     public static @ColorInt int getColor(Context context, String key, int defValue) {
         return getDefaultSharedPreferences(context).getInt(key, defValue);
+    }
+
+    public static boolean isTitleUniqueColor(Context context) {
+        return getDefaultSharedPreferences(context).getBoolean(
+                context.getString(R.string.pref_title_use_unique_color_key),
+                context.getResources().getBoolean(R.bool.pref_title_use_unique_color_default));
     }
 
     public static boolean isTitleEnabled(Context context) {

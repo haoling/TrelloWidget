@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
+import android.preference.SwitchPreference;
 
 import com.github.oryanmat.trellowidget.R;
 import com.github.oryanmat.trellowidget.util.color.ColorPreference;
@@ -23,6 +24,7 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_fore_color_key));
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_title_back_color_key));
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_title_fore_color_key));
+        listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_title_use_unique_color_key));
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_update_interval_key));
     }
 
@@ -71,6 +73,18 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         } else if (key.equals(getString(R.string.pref_title_fore_color_key))) {
             ColorPreference preference = (ColorPreference) findPreference(key);
             preference.setSummary(String.format(COLOR_FORMAT, preference.getColor()));
+        } else if (key.equals(getString(R.string.pref_title_use_unique_color_key))) {
+            SwitchPreference preference = (SwitchPreference) findPreference(key);
+            boolean enableTitleSettings = preference.isChecked();
+            if (enableTitleSettings) {
+                preference.setSummary(R.string.pref_title_use_unique_color_enabled_desc);
+            } else {
+                preference.setSummary(R.string.pref_title_use_unique_color_disabled_desc);
+            }
+            ColorPreference titleFgPref = (ColorPreference) findPreference(getString(R.string.pref_title_fore_color_key));
+            ColorPreference titleBgPref = (ColorPreference) findPreference(getString(R.string.pref_title_back_color_key));
+            titleFgPref.setEnabled(enableTitleSettings);
+            titleBgPref.setEnabled(enableTitleSettings);
         }
     }
 }
