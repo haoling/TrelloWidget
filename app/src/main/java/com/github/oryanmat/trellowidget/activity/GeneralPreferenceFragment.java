@@ -26,6 +26,7 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_title_fore_color_key));
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_title_use_unique_color_key));
         listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_update_interval_key));
+        listener.onSharedPreferenceChanged(preferences, getString(R.string.pref_two_line_title_key));
 
         ColorPreference titleBgPref = (ColorPreference) findPreference(getString(R.string.pref_title_back_color_key));
         ColorPreference cardBgPref = (ColorPreference) findPreference(getString(R.string.pref_back_color_key));
@@ -92,6 +93,13 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
             ColorPreference titleBgPref = (ColorPreference) findPreference(getString(R.string.pref_title_back_color_key));
             titleFgPref.setEnabled(enableTitleSettings);
             titleBgPref.setEnabled(enableTitleSettings);
+        } else if (key.equals(getString(R.string.pref_two_line_title_key))) {
+            SwitchPreference preference = (SwitchPreference) findPreference(key);
+            if (preference.isChecked()) {
+                preference.setSummary(R.string.pref_two_line_title_enabled_desc);
+            } else {
+                preference.setSummary(R.string.pref_two_line_title_disabled_desc);
+            }
         }
     }
 }

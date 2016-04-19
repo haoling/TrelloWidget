@@ -20,9 +20,12 @@ import com.github.oryanmat.trellowidget.util.PrefUtil;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS;
+import static com.github.oryanmat.trellowidget.util.PrefUtil.isTwoLineTitle;
+import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.hideView;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setBackground;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setImageViewColor;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setTextView;
+import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.showView;
 import static com.github.oryanmat.trellowidget.util.color.ColorUtil.dim;
 
 public class TrelloWidgetProvider extends AppWidgetProvider {
@@ -50,13 +53,23 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.trello_widget);
 
         // Set up the title bar
-        setTextView(views, R.id.list_title, list.name, titleFgColor);
+        if (isTwoLineTitle(context) && !board.id.equals("-1")) {
+            showView(views, R.id.two_line_title);
+            setTextView(views, R.id.board_title, board.name, titleFgColor);
+            setTextView(views, R.id.list_subtitle, list.name, titleFgColor);
+            hideView(views, R.id.list_title);
+        } else {
+            showView(views, R.id.list_title);
+            setTextView(views, R.id.list_title, list.name, titleFgColor);
+            hideView(views, R.id.two_line_title);
+        }
+
         setImageViewColor(views, R.id.refreshButt, dim(titleFgColor));
         setImageViewColor(views, R.id.reconfigureButt, dim(titleFgColor));
         setBackground(views, R.id.title_bar, titleBgColor);
         views.setOnClickPendingIntent(R.id.refreshButt, getRefreshPendingIntent(context, appWidgetId));
         views.setOnClickPendingIntent(R.id.reconfigureButt, getReconfigPendingIntent(context, appWidgetId));
-        views.setOnClickPendingIntent(R.id.list_title, getTitleIntent(context, board));
+        views.setOnClickPendingIntent(R.id.widget_title, getTitleIntent(context, board));
 
         // Set up the card list
         setImageViewColor(views, R.id.divider, cardFgColor);

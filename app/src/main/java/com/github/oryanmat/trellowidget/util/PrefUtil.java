@@ -56,6 +56,12 @@ public class PrefUtil {
                 context.getResources().getBoolean(R.bool.pref_title_use_unique_color_default));
     }
 
+    public static boolean isTwoLineTitle(Context context) {
+        return getDefaultSharedPreferences(context).getBoolean(
+                context.getString(R.string.pref_two_line_title_key),
+                context.getResources().getBoolean(R.bool.pref_two_line_title_default));
+    }
+
     public static boolean isTitleEnabled(Context context) {
         return getDefaultSharedPreferences(context).getBoolean(
                 context.getString(R.string.pref_title_onclick_key),

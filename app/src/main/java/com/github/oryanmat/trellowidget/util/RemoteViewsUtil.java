@@ -11,6 +11,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import static android.graphics.Color.alpha;
@@ -35,6 +36,15 @@ public class RemoteViewsUtil {
                                    String text, @ColorInt int color) {
         views.setTextViewText(textView, text);
         views.setTextColor(textView, color);
+
+    }
+
+    public static void hideView(RemoteViews views, @IdRes int textView) {
+        views.setViewVisibility(textView, View.GONE);
+    }
+
+    public static void showView(RemoteViews views, @IdRes int textView) {
+        views.setViewVisibility(textView,View.VISIBLE);
     }
 
     public static void setImage(Context context, RemoteViews views,

@@ -20,16 +20,49 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/title_bar"
-            android:background="#54ffffff">
+            android:background="#54ffffff"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/list_title"
-                style="@style/WidgetTitle"
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/list_hint"
-                android:singleLine="true" />
+                android:id="@+id/widget_title">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/WidgetTitle"
+                    android:id="@+id/two_line_title">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/board_hint"
+                        android:id="@+id/board_title"
+                        android:singleLine="true"
+                        style="@style/BoardTitle" />
+
+                    <TextView
+                        android:id="@+id/list_subtitle"
+                        style="@style/ListSubtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/list_hint"
+                        android:singleLine="true"
+                        android:layout_marginTop="-3dp" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/ListTitle"
+                    android:id="@+id/list_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/list_hint"
+                    android:singleLine="true"
+                    android:visibility="invisible" />
+            </FrameLayout>
 
             <ImageButton
                 android:id="@+id/refreshButt"
@@ -83,5 +116,6 @@
                 android:text="@string/no_cards"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
         </FrameLayout>
+
     </LinearLayout>
 </FrameLayout>
