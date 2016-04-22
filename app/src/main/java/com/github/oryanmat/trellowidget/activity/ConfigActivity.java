@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ public class ConfigActivity extends Activity {
         setContentView(R.layout.activity_config);
         setWidgetId();
         setupConfigButton();
+        setupButtonBar();
         showProgressDialog();
         get(TrelloAPIUtil.instance.boards(), new BoardListener());
     }
@@ -74,6 +76,23 @@ public class ConfigActivity extends Activity {
         } else {
             cfgButton.setVisibility(View.GONE);
         }
+    }
+
+    private void setupButtonBar() {
+        Button ok = (Button)findViewById(R.id.okButton);
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ok(v);
+            }
+        });
+        Button cancel = (Button)findViewById(R.id.cancelButton);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancel(v);
+            }
+        });
     }
 
     private void showProgressDialog() {

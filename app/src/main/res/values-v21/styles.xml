@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.Light">
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+    </style>
+    <style name="DialogTheme" parent="android:Theme.DeviceDefault.Light.Dialog.NoActionBar">
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+    </style>
+
+    <color name="primary">#64b5f6</color>
+    <color name="primary_dark">#2196f3</color>
+    <color name="accent">#218DE9</color>
+    <color name="dialogButtonFg">@color/material_grey_600</color>
+</resources>

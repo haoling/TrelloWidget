@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/title_bar"
-            android:background="#54ffffff"
+            android:background="#AA000000"
             android:orientation="horizontal">
 
             <FrameLayout
@@ -100,7 +100,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/card_frame">
+            android:id="@+id/card_frame"
+            android:background="#DD000000">
 
             <ListView
                 android:id="@+id/card_list"
@@ -114,7 +115,8 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="@string/no_cards"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff" />
         </FrameLayout>
 
     </LinearLayout>
