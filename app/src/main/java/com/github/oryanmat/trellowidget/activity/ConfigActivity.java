@@ -103,7 +103,7 @@ public class ConfigActivity extends Activity {
     }
 
     void get(String url, BoardListener listener) {
-        TrelloAPIUtil.instance.getAsync(url, listener, listener);
+        TrelloAPIUtil.instance.getAsync(url, listener);
     }
 
     class BoardListener implements Response.Listener<String>, Response.ErrorListener {

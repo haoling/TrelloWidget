@@ -13,6 +13,7 @@ import com.android.volley.toolbox.Volley;
 import com.github.oryanmat.trellowidget.R;
 import com.github.oryanmat.trellowidget.model.BoardList;
 import com.github.oryanmat.trellowidget.model.CardArray;
+import com.github.oryanmat.trellowidget.model.NewCard;
 
 import java.util.concurrent.ExecutionException;
 
@@ -21,21 +22,24 @@ import static com.github.oryanmat.trellowidget.TrelloWidget.T_WIDGET;
 
 public class TrelloAPIUtil {
     public static final String TOKEN_PREF_KEY = "com.oryanmat.trellowidget.usertoken";
+
     public static final String APP_KEY = "b250ef70ccf79ea5e107279a91045e6e";
     public static final String BASE_URL = "https://api.trello.com/";
     public static final String API_VERSION = "1/";
-    public static final String KEY = String.format("&key=%s", APP_KEY);
+    public static final String KEY = String.format("key=%s", APP_KEY);
     public static final String AUTH_URL = "https://trello.com/1/authorize" +
             "?name=TrelloWidget" +
-            KEY +
+            "&" + KEY +
+            "&scope=read,write" +
             "&expiration=never" +
             "&callback_method=fragment" +
             "&return_url=trello-widget://callback";
 
-    public static final String USER = "members/me?fields=fullName,username";
+    public static final String USER = "members/me?fields=fullName,username&";
     public static final String BOARDS = "members/me/boards?filter=open&fields=id,name,url" +
-            "&lists=open&list_fields=id,name";
-    public static final String LIST_CARDS = "lists/%s?cards=open&card_fields=name,badges,labels,url";
+            "&lists=open&list_fields=id,name&";
+    public static final String LIST_CARDS = "lists/%s?cards=open&card_fields=name,badges,labels,url&";
+    public static final String CARDS = "cards/?";
 
     public static TrelloAPIUtil instance;
 
@@ -78,10 +82,18 @@ public class TrelloAPIUtil {
         return Json.tryParseJson(json, CardArray.class, CardArray.oneItemList(json));
     }
 
-    String get(String url) {
-        RequestFuture<String> future = RequestFuture.newFuture();
-        getRequestQueue().add(new StringRequest(Request.Method.GET, url, future, future));
+    public <L extends Response.Listener<String> & Response.ErrorListener> void addNewCard(NewCard newCard, L listener) {
+        String json = Json.get().toJson(newCard);
+        postAsync(String.format(buildURL(), CARDS), json, listener);
+    }
 
+    String get(String url) {
+        return syncRequest(url, null, Request.Method.GET);
+    }
+
+    String syncRequest(String url, String data, int method) {
+        RequestFuture<String> future = RequestFuture.newFuture();
+        requestAsync(url, data, method, future, future);
         return get(future);
     }
 
@@ -95,8 +107,35 @@ public class TrelloAPIUtil {
         }
     }
 
+    public <L extends Response.Listener<String> & Response.ErrorListener> void getAsync(String url, L listener) {
+        requestAsync(url, null, Request.Method.GET, listener, listener);
+    }
+
     public void getAsync(String url, Response.Listener<String> listener, Response.ErrorListener errorListener) {
-        StringRequest request = new StringRequest(Request.Method.GET, url, listener, errorListener);
+        requestAsync(url, null, Request.Method.GET, listener, errorListener);
+    }
+
+    public <L extends Response.Listener<String> & Response.ErrorListener> void postAsync(String url, String data, L listener) {
+        requestAsync(url, data, Request.Method.POST, listener, listener);
+    }
+
+    // TODO: Since we're dealing exclusively with JSON here, maybe it would be easier to start using JsonObjectRequest objcets as opposed to plain StringRequest objects
+    public void requestAsync(String url, final String data, int method, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        StringRequest request = new StringRequest(method, url, listener, errorListener) {
+            @Override
+            public byte[] getBody() {
+                if (data != null) {
+                    return data.getBytes();
+                }
+                return new byte[0];
+            }
+
+            @Override
+            public String getBodyContentType()
+            {
+                return "application/json; charset=utf-8";
+            }
+        };
         getRequestQueue().add(request);
     }
 }
