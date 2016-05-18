@@ -9,19 +9,19 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.github.oryanmat.trellowidget.R;
 import com.github.oryanmat.trellowidget.TrelloWidget;
-import com.github.oryanmat.trellowidget.activity.AddCardActivity;
-import com.github.oryanmat.trellowidget.activity.ConfigActivity;
 import com.github.oryanmat.trellowidget.model.Board;
 import com.github.oryanmat.trellowidget.model.BoardList;
+import com.github.oryanmat.trellowidget.util.IntentUtil;
 import com.github.oryanmat.trellowidget.util.PrefUtil;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE;
-import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS;
+import static com.github.oryanmat.trellowidget.TrelloWidget.T_WIDGET;
 import static com.github.oryanmat.trellowidget.util.PrefUtil.isTwoLineTitle;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.hideView;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setBackground;
@@ -31,8 +31,8 @@ import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.showView;
 import static com.github.oryanmat.trellowidget.util.color.ColorUtil.dim;
 
 public class TrelloWidgetProvider extends AppWidgetProvider {
-    private static final String ADD_ACTION = "com.github.oryanmat.trellowidget.addAction";
-    private static final String REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction";
+    public static final String ADD_ACTION = "com.github.oryanmat.trellowidget.addAction";
+    public static final String REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction";
     public static final String WIDGET_ID = "com.github.oryanmat.trellowidget.widgetId";
     public static final String TRELLO_PACKAGE_NAME = "com.trello";
     public static final String TRELLO_URL = "https://www.trello.com";
@@ -95,24 +95,17 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
     }
 
     private PendingIntent getAddPendingIntent(Context context, int appWidgetId) {
-        Intent addIntent = new Intent(context, AddCardActivity.class);
-        addIntent.setAction(ADD_ACTION);
-        addIntent.putExtra(EXTRA_APPWIDGET_ID, appWidgetId);
+        Intent addIntent = IntentUtil.createAddCardIntent(context, appWidgetId);
         return PendingIntent.getActivity(context, appWidgetId, addIntent, 0);
     }
 
     private PendingIntent getRefreshPendingIntent(Context context, int appWidgetId) {
-        Intent refreshIntent = new Intent(context, TrelloWidgetProvider.class);
-        refreshIntent.setAction(REFRESH_ACTION);
-        refreshIntent.putExtra(WIDGET_ID, appWidgetId);
+        Intent refreshIntent = IntentUtil.createRefreshIntent(context, appWidgetId);
         return PendingIntent.getBroadcast(context, appWidgetId, refreshIntent, 0);
     }
 
     private PendingIntent getReconfigPendingIntent(Context context, int appWidgetId) {
-        Intent reconfigIntent = new Intent(context, ConfigActivity.class);
-        reconfigIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
-        reconfigIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        reconfigIntent.putExtra(ConfigActivity.CONFIG_ACTIVITY_IS_RECONFIG, true);
+        Intent reconfigIntent = IntentUtil.createReconfigureIntent(context, appWidgetId);
         return PendingIntent.getActivity(context, appWidgetId, reconfigIntent, 0);
     }
 
@@ -121,13 +114,14 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
 
         if (intent.getAction().equals(REFRESH_ACTION)) {
+            Log.i(T_WIDGET, "Received refresh intent: Refreshing widget contents");
             notifyDataChanged(context, intent.getIntExtra(WIDGET_ID, 0));
         }
     }
 
     private PendingIntent getCardPendingIntent(Context context) {
         // individual card URIs are set in a RemoteViewsFactory.setOnClickFillInIntent
-        return PendingIntent.getActivity(context, 0, new Intent(Intent.ACTION_VIEW), 0);
+        return IntentUtil.createViewCardIntentTemplate(context);
     }
 
     private PendingIntent getTitleIntent(Context context, Board board) {

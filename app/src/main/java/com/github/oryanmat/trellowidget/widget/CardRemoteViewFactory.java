@@ -18,6 +18,7 @@ import com.github.oryanmat.trellowidget.model.Card;
 import com.github.oryanmat.trellowidget.model.CardArray;
 import com.github.oryanmat.trellowidget.model.Label;
 import com.github.oryanmat.trellowidget.util.DateTimeUtil;
+import com.github.oryanmat.trellowidget.util.IntentUtil;
 import com.github.oryanmat.trellowidget.util.PrefUtil;
 import com.github.oryanmat.trellowidget.util.TrelloAPIUtil;
 import com.github.oryanmat.trellowidget.util.color.LabelColors;
@@ -75,7 +76,7 @@ public class CardRemoteViewFactory implements RemoteViewsService.RemoteViewsFact
     }
 
     private void setOnClickFillInIntent(RemoteViews views, Card card) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(card.url));
+        Intent intent = IntentUtil.createViewCardIntent(card);
         views.setOnClickFillInIntent(R.id.card, intent);
     }
 
