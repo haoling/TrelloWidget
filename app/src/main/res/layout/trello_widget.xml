@@ -65,11 +65,21 @@
             </FrameLayout>
 
             <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/addButton"
+                android:layout_weight="0.1"
+                android:src="@drawable/ic_add_box_white_24dp"
+                android:background="@android:color/transparent"
+                android:layout_gravity="center_vertical|right"
+                android:contentDescription="@string/add" />
+
+            <ImageButton
                 android:id="@+id/refreshButt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="0.1"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/refresh"
                 android:paddingEnd="@dimen/title_padding"
@@ -80,8 +90,8 @@
                 android:id="@+id/reconfigureButt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="0.1"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/refresh"
                 android:paddingEnd="@dimen/title_padding"

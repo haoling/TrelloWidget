@@ -13,12 +13,14 @@ import android.widget.RemoteViews;
 
 import com.github.oryanmat.trellowidget.R;
 import com.github.oryanmat.trellowidget.TrelloWidget;
+import com.github.oryanmat.trellowidget.activity.AddCardActivity;
 import com.github.oryanmat.trellowidget.activity.ConfigActivity;
 import com.github.oryanmat.trellowidget.model.Board;
 import com.github.oryanmat.trellowidget.model.BoardList;
 import com.github.oryanmat.trellowidget.util.PrefUtil;
 
 import static android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE;
+import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID;
 import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS;
 import static com.github.oryanmat.trellowidget.util.PrefUtil.isTwoLineTitle;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.hideView;
@@ -29,6 +31,7 @@ import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.showView;
 import static com.github.oryanmat.trellowidget.util.color.ColorUtil.dim;
 
 public class TrelloWidgetProvider extends AppWidgetProvider {
+    private static final String ADD_ACTION = "com.github.oryanmat.trellowidget.addAction";
     private static final String REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction";
     public static final String WIDGET_ID = "com.github.oryanmat.trellowidget.widgetId";
     public static final String TRELLO_PACKAGE_NAME = "com.trello";
@@ -64,9 +67,11 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
             hideView(views, R.id.two_line_title);
         }
 
+        setImageViewColor(views, R.id.addButton, dim(titleFgColor));
         setImageViewColor(views, R.id.refreshButt, dim(titleFgColor));
         setImageViewColor(views, R.id.reconfigureButt, dim(titleFgColor));
         setBackground(views, R.id.title_bar, titleBgColor);
+        views.setOnClickPendingIntent(R.id.addButton, getAddPendingIntent(context, appWidgetId));
         views.setOnClickPendingIntent(R.id.refreshButt, getRefreshPendingIntent(context, appWidgetId));
         views.setOnClickPendingIntent(R.id.reconfigureButt, getReconfigPendingIntent(context, appWidgetId));
         views.setOnClickPendingIntent(R.id.widget_title, getTitleIntent(context, board));
@@ -87,6 +92,13 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
         return intent;
+    }
+
+    private PendingIntent getAddPendingIntent(Context context, int appWidgetId) {
+        Intent addIntent = new Intent(context, AddCardActivity.class);
+        addIntent.setAction(ADD_ACTION);
+        addIntent.putExtra(EXTRA_APPWIDGET_ID, appWidgetId);
+        return PendingIntent.getActivity(context, appWidgetId, addIntent, 0);
     }
 
     private PendingIntent getRefreshPendingIntent(Context context, int appWidgetId) {
