@@ -9,6 +9,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.DimenRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.View;
@@ -39,12 +40,12 @@ public class RemoteViewsUtil {
 
     }
 
-    public static void hideView(RemoteViews views, @IdRes int textView) {
-        views.setViewVisibility(textView, View.GONE);
+    public static void hideView(RemoteViews views, @IdRes int targetView) {
+        views.setViewVisibility(targetView, View.GONE);
     }
 
-    public static void showView(RemoteViews views, @IdRes int textView) {
-        views.setViewVisibility(textView,View.VISIBLE);
+    public static void showView(RemoteViews views, @IdRes int targetView) {
+        views.setViewVisibility(targetView,View.VISIBLE);
     }
 
     public static void setImage(Context context, RemoteViews views,
@@ -74,5 +75,13 @@ public class RemoteViewsUtil {
         float density = context.getResources().getDisplayMetrics().density;
         float prefTextScale = PrefUtil.getPrefTextScale(context);
         return dimension * prefTextScale / density;
+    }
+
+    public static void optionallyHideView(RemoteViews views, Context context, @IdRes int targetView, @StringRes int preferenceKey) {
+        if (PrefUtil.isEnabled(context, preferenceKey)) {
+            showView(views, targetView);
+        } else {
+            hideView(views, targetView);
+        }
     }
 }

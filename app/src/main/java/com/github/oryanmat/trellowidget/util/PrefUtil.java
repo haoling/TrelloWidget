@@ -2,6 +2,7 @@ package com.github.oryanmat.trellowidget.util;
 
 import android.content.Context;
 import android.support.annotation.ColorInt;
+import android.support.annotation.StringRes;
 
 import com.github.oryanmat.trellowidget.R;
 
@@ -51,20 +52,20 @@ public class PrefUtil {
     }
 
     public static boolean isTitleUniqueColor(Context context) {
-        return getDefaultSharedPreferences(context).getBoolean(
-                context.getString(R.string.pref_title_use_unique_color_key),
-                context.getResources().getBoolean(R.bool.pref_title_use_unique_color_default));
+        return isEnabled(context, R.string.pref_title_use_unique_color_key);
     }
 
     public static boolean isTwoLineTitle(Context context) {
-        return getDefaultSharedPreferences(context).getBoolean(
-                context.getString(R.string.pref_two_line_title_key),
-                context.getResources().getBoolean(R.bool.pref_two_line_title_default));
+        return isEnabled(context, R.string.pref_two_line_title_key);
     }
 
     public static boolean isTitleEnabled(Context context) {
+        return isEnabled(context, R.string.pref_title_onclick_key);
+    }
+
+    public static boolean isEnabled(Context context, @StringRes int key) {
         return getDefaultSharedPreferences(context).getBoolean(
-                context.getString(R.string.pref_title_onclick_key),
-                context.getResources().getBoolean(R.bool.pref_title_onclick_default));
+                context.getString(key),
+                true); // This assumes the default preferences have been loaded
     }
 }

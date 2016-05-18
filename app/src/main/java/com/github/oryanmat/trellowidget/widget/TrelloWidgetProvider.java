@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -24,6 +25,7 @@ import static android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS;
 import static com.github.oryanmat.trellowidget.TrelloWidget.T_WIDGET;
 import static com.github.oryanmat.trellowidget.util.PrefUtil.isTwoLineTitle;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.hideView;
+import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.optionallyHideView;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setBackground;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setImageViewColor;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setTextView;
@@ -39,6 +41,7 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        PreferenceManager.setDefaultValues(context, R.xml.pref_general, false);
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
@@ -75,6 +78,9 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.refreshButt, getRefreshPendingIntent(context, appWidgetId));
         views.setOnClickPendingIntent(R.id.reconfigureButt, getReconfigPendingIntent(context, appWidgetId));
         views.setOnClickPendingIntent(R.id.widget_title, getTitleIntent(context, board));
+        optionallyHideView(views, context, R.id.addButton, R.string.pref_add_button_key);
+        optionallyHideView(views, context, R.id.refreshButt, R.string.pref_refresh_button_key);
+        optionallyHideView(views, context, R.id.reconfigureButt, R.string.pref_reconfig_button_key);
 
         // Set up the card list
         setImageViewColor(views, R.id.divider, cardFgColor);
