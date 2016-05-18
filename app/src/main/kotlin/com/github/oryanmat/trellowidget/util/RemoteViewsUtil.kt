@@ -5,10 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Color.*
 import android.graphics.drawable.BitmapDrawable
-import android.support.annotation.ColorInt
-import android.support.annotation.DimenRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.IdRes
+import android.support.annotation.*
 import android.support.v4.content.ContextCompat
 import android.util.TypedValue
 import android.view.View
@@ -70,5 +67,8 @@ object RemoteViewsUtil {
     fun showView(views: RemoteViews, @IdRes view: Int) {
         views.setViewVisibility(view, View.VISIBLE)
     }
+
+    fun optionallyHideView(views: RemoteViews, context: Context, @IdRes view: Int, @StringRes preferenceKey: Int) =
+            views.setViewVisibility(view, (if (context.isEnabled(preferenceKey)) View.VISIBLE else View.GONE))
 
 }

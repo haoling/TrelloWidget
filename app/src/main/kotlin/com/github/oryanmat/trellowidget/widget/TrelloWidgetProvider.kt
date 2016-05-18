@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.preference.PreferenceManager
 import android.support.annotation.ColorInt
 import android.widget.RemoteViews
 import com.github.oryanmat.trellowidget.R
@@ -17,6 +18,7 @@ import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setTextView
 import com.github.oryanmat.trellowidget.util.color.lightDim
 import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.showView
 import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.hideView
+import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.optionallyHideView
 
 val ADD_ACTION = "com.github.oryanmat.trellowidget.addAction"
 val REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction"
@@ -26,6 +28,7 @@ private val TRELLO_URL = "https://www.trello.com"
 
 class TrelloWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        PreferenceManager.setDefaultValues(context, R.xml.pref_general, false)
         appWidgetIds.forEach { updateAppWidget(context, appWidgetManager, it) }
     }
 
@@ -70,6 +73,9 @@ class TrelloWidgetProvider : AppWidgetProvider() {
         views.setOnClickPendingIntent(R.id.addButton, getAddPendingIntent(context, appWidgetId))
         views.setOnClickPendingIntent(R.id.refreshButt, getRefreshPendingIntent(context, appWidgetId))
         views.setOnClickPendingIntent(R.id.configButt, getReconfigPendingIntent(context, appWidgetId))
+        optionallyHideView(views, context, R.id.addButton, R.string.pref_add_button_key)
+        optionallyHideView(views, context, R.id.refreshButt, R.string.pref_refresh_button_key)
+        optionallyHideView(views, context, R.id.configButt, R.string.pref_config_button_key)
     }
 
     private fun updateCardList(appWidgetId: Int, context: Context, views: RemoteViews) {

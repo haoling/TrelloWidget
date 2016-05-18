@@ -3,6 +3,7 @@ package com.github.oryanmat.trellowidget.util
 import android.content.Context
 import android.preference.PreferenceManager.getDefaultSharedPreferences
 import android.support.annotation.ColorInt
+import android.support.annotation.StringRes
 import com.github.oryanmat.trellowidget.R
 
 internal fun Context.getPrefTextScale() =
@@ -23,13 +24,17 @@ internal @ColorInt fun Context.getCardForegroundColor() = getColor(
         getString(R.string.pref_fore_color_key),
         resources.getInteger(R.integer.pref_fore_color_default))
 
-internal fun Context.isTwoLineTitle() = sharedPreferences().getBoolean(
-        getString(R.string.pref_two_line_title_key),
-        resources.getBoolean(R.bool.pref_two_line_title_default))
+internal fun Context.isTwoLineTitle() =
+        isEnabled(R.string.pref_two_line_title_key)
 
-internal fun Context.isTitleUniqueColor() = sharedPreferences().getBoolean(
-        getString(R.string.pref_title_use_unique_color_key),
-        resources.getBoolean(R.bool.pref_title_use_unique_color_default))
+internal fun Context.isTitleUniqueColor() =
+        isEnabled(R.string.pref_title_use_unique_color_key)
+
+internal fun Context.isTitleEnabled() =
+        isEnabled(R.string.pref_title_onclick_key)
+
+internal fun Context.isEnabled(@StringRes key: Int) =
+        sharedPreferences().getBoolean(getString(key), true)
 
 internal @ColorInt fun Context.getTitleBackgroundColor(): Int = when {
     isTitleUniqueColor() -> getColor(
@@ -47,9 +52,5 @@ internal @ColorInt fun Context.getTitleForegroundColor(): Int = when {
 
 private @ColorInt fun Context.getColor(key: String, defValue: Int) =
         sharedPreferences().getInt(key, defValue)
-
-internal fun Context.isTitleEnabled() = sharedPreferences().getBoolean(
-        getString(R.string.pref_title_onclick_key),
-        resources.getBoolean(R.bool.pref_title_onclick_default))
 
 private fun Context.sharedPreferences() = getDefaultSharedPreferences(this)
