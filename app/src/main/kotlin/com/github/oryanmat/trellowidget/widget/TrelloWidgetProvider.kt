@@ -9,6 +9,7 @@ import android.net.Uri
 import android.support.annotation.ColorInt
 import android.widget.RemoteViews
 import com.github.oryanmat.trellowidget.R
+import com.github.oryanmat.trellowidget.activity.AddCardActivity
 import com.github.oryanmat.trellowidget.activity.ConfigActivity
 import com.github.oryanmat.trellowidget.model.Board
 import com.github.oryanmat.trellowidget.util.*
@@ -19,6 +20,7 @@ import com.github.oryanmat.trellowidget.util.color.lightDim
 import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.showView
 import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.hideView
 
+private val ADD_ACTION = "com.github.oryanmat.trellowidget.addAction"
 private val REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction"
 private val WIDGET_ID = "com.github.oryanmat.trellowidget.widgetId"
 private val TRELLO_PACKAGE_NAME = "com.trello"
@@ -63,9 +65,11 @@ class TrelloWidgetProvider : AppWidgetProvider() {
             hideView(views, R.id.two_line_title)
             views.setOnClickPendingIntent(R.id.list_title, getTitleIntent(context, board))
         }
+        setImageViewColor(views, R.id.addButton, foregroundColor.lightDim())
         setImageViewColor(views, R.id.refreshButt, foregroundColor.lightDim())
         setImageViewColor(views, R.id.configButt, foregroundColor.lightDim())
         setBackgroundColor(views, R.id.title_bar, context.getTitleBackgroundColor())
+        views.setOnClickPendingIntent(R.id.addButton, getAddPendingIntent(context, appWidgetId))
         views.setOnClickPendingIntent(R.id.refreshButt, getRefreshPendingIntent(context, appWidgetId))
         views.setOnClickPendingIntent(R.id.configButt, getReconfigPendingIntent(context, appWidgetId))
     }
@@ -83,6 +87,13 @@ class TrelloWidgetProvider : AppWidgetProvider() {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
         return intent
+    }
+
+    private fun getAddPendingIntent(context: Context, appWidgetId: Int): PendingIntent {
+        val addIntent = Intent(context, AddCardActivity::class.java)
+        addIntent.action = ADD_ACTION
+        addIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        return PendingIntent.getActivity(context, appWidgetId, addIntent, 0)
     }
 
     private fun getRefreshPendingIntent(context: Context, appWidgetId: Int): PendingIntent {
