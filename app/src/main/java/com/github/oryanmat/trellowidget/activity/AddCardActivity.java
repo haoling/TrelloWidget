@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +33,7 @@ import static com.github.oryanmat.trellowidget.TrelloWidget.T_WIDGET;
 public class AddCardActivity extends Activity {
     int appWidgetId = INVALID_APPWIDGET_ID;
     int cardsAdded = 0;
-    boolean addSingleCard = false;
+
     enum Location {
         INSERT_AT_TOP,
         INSERT_AT_BOTTOM
@@ -100,10 +101,11 @@ public class AddCardActivity extends Activity {
         } else {
             newCard.atBottom();
         }
+        Switch addMultiples = (Switch)findViewById(R.id.addMultiples);
 
         String listDescription = board.name + "/" + list.name;
         Log.d(T_WIDGET, "Adding new card to " + (where == Location.INSERT_AT_TOP ? "top" : "bottom") + " of " + listDescription + ": " + newTitle);
-        AddCardListener listener = new AddCardListener(view, listDescription);
+        AddCardListener listener = new AddCardListener(view, listDescription, addMultiples.isChecked());
         TrelloAPIUtil.instance.addNewCard(newCard, listener);
 
         // TODO: Start a spinner or something?
@@ -112,9 +114,11 @@ public class AddCardActivity extends Activity {
     class AddCardListener implements Response.Listener<String>, Response.ErrorListener {
         View view;
         String description;
-        public AddCardListener(View v, String listDescription) {
+        boolean closeOnSuccess;
+        public AddCardListener(View v, String listDescription, boolean addMultiples) {
             view = v;
             description = listDescription;
+            closeOnSuccess = !addMultiples;
         }
 
         @Override
@@ -122,7 +126,7 @@ public class AddCardActivity extends Activity {
             // TODO: The 'response' is the json of the newly-created card - We could maybe inject this into the RemoteView without forcing a refresh?
             Log.i(T_WIDGET, "Added card to " + description);
             cardsAdded++;
-            if (addSingleCard) {
+            if (closeOnSuccess) {
                 close(view);
             } else {
                 resetInput(view);
@@ -135,6 +139,7 @@ public class AddCardActivity extends Activity {
             Log.e(T_WIDGET, "Add Card failed: " + error.networkResponse.data.toString(), error);
             String message = getString(R.string.add_card_failure);
             if (error.networkResponse.statusCode == 401) {
+                // TODO: Maybe actually open the login dialog?
                 message = getString(R.string.add_card_permission_failure);
             }
             Toast.makeText(AddCardActivity.this, message, Toast.LENGTH_LONG).show();

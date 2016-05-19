@@ -21,6 +21,7 @@
     <string name="add_card_success">Added</string>
     <string name="add_card_permission_failure">Card failed to add.\nPlease try logging out and logging in again.</string>
     <string name="add_card_failure">Card failed to add.</string>
+    <string name="add_card_add_multiples">Add multiples</string>
 
     <!-- widget -->
     <string name="board_hint">Board name</string>
@@ -28,7 +29,6 @@
     <string name="no_cards">No more cards!</string>
     <string name="refresh">Refresh list cards</string>
     <string name="add">Add a new card</string>
-
 
     <string name="card_title">Card title</string>
 
@@ -51,7 +51,5 @@
     <string name="http_fail">Trello http request failed: %s</string>
     <string name="login_fail">Login failed multiple times. Logging you out: %s</string>
     <string name="board_load_fail">Could not load board data.\nPlease make sure you are logged in and try again.\n\nError was: %s</string>
-
-
 
 </resources>
