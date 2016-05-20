@@ -2,21 +2,23 @@ package com.github.oryanmat.trellowidget.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.github.oryanmat.trellowidget.R;
 import com.github.oryanmat.trellowidget.TrelloWidget;
 import com.github.oryanmat.trellowidget.model.Board;
 import com.github.oryanmat.trellowidget.model.BoardList;
+import com.github.oryanmat.trellowidget.model.Card;
 import com.github.oryanmat.trellowidget.model.NewCard;
 import com.github.oryanmat.trellowidget.util.IntentUtil;
 import com.github.oryanmat.trellowidget.util.TrelloAPIUtil;
@@ -82,6 +84,19 @@ public class AddCardActivity extends Activity {
             }
         });
         setButtonsEnabled(true);
+
+        Switch addMultiples = (Switch)findViewById(R.id.addMultiples);
+        final Switch openInTrello = (Switch)findViewById(R.id.openAfterAdd);
+        addMultiples.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    openInTrello.setEnabled(false);
+                } else {
+                    openInTrello.setEnabled(true);
+                }
+            }
+        });
     }
 
     public void addNewCard(View view, Location where)
@@ -102,31 +117,46 @@ public class AddCardActivity extends Activity {
             newCard.atBottom();
         }
         Switch addMultiples = (Switch)findViewById(R.id.addMultiples);
+        Switch openInTrello = (Switch)findViewById(R.id.openAfterAdd);
 
         String listDescription = board.name + "/" + list.name;
         Log.d(T_WIDGET, "Adding new card to " + (where == Location.INSERT_AT_TOP ? "top" : "bottom") + " of " + listDescription + ": " + newTitle);
-        AddCardListener listener = new AddCardListener(view, listDescription, addMultiples.isChecked());
+        AddCardListener listener = new AddCardListener(view, listDescription, addMultiples.isChecked(), openInTrello.isEnabled() && openInTrello.isChecked());
         TrelloAPIUtil.instance.addNewCard(newCard, listener);
 
         // TODO: Start a spinner or something?
     }
 
-    class AddCardListener implements Response.Listener<String>, Response.ErrorListener {
+    class AddCardListener extends TrelloAPIUtil.CardResponseListener {
         View view;
         String description;
         boolean closeOnSuccess;
-        public AddCardListener(View v, String listDescription, boolean addMultiples) {
+        boolean openOnSuccess;
+        public AddCardListener(View v, String listDescription, boolean addMultiples, boolean openInTrello) {
             view = v;
             description = listDescription;
             closeOnSuccess = !addMultiples;
+            openOnSuccess = openInTrello;
         }
 
         @Override
-        public void onResponse(String response) {
-            // TODO: The 'response' is the json of the newly-created card - We could maybe inject this into the RemoteView without forcing a refresh?
-            Log.i(T_WIDGET, "Added card to " + description);
+        public void onResponse(Card newCard) {
+            // TODO: We could maybe inject this into the RemoteView without forcing a refresh?
             cardsAdded++;
+            if (newCard.id == null || newCard.url == null || newCard.url.isEmpty()) {
+                String message = getString(R.string.add_card_parse_failure);
+                Log.w(T_WIDGET, message);
+                Toast.makeText(AddCardActivity.this, message, Toast.LENGTH_LONG).show();
+                close(view);
+                return;
+            }
+            Log.i(T_WIDGET, "Added card " + newCard.id + " (" + newCard.url + ") to " + description);
+
             if (closeOnSuccess) {
+                if (openOnSuccess) {
+                    Intent openCardIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(newCard.url));
+                    startActivity(openCardIntent);
+                }
                 close(view);
             } else {
                 resetInput(view);

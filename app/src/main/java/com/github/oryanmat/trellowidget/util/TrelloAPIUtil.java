@@ -12,6 +12,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.oryanmat.trellowidget.R;
 import com.github.oryanmat.trellowidget.model.BoardList;
+import com.github.oryanmat.trellowidget.model.Card;
 import com.github.oryanmat.trellowidget.model.CardArray;
 import com.github.oryanmat.trellowidget.model.NewCard;
 
@@ -137,5 +138,19 @@ public class TrelloAPIUtil {
             }
         };
         getRequestQueue().add(request);
+    }
+
+    /**
+     * Overrides the default String Listener and automatically takes care of parsing the response json into a Card object
+     */
+    public static abstract class CardResponseListener implements Response.Listener<String>, Response.ErrorListener {
+
+        public abstract void onResponse(Card newCard);
+
+        @Override
+        public void onResponse(String response) {
+            Card card = Json.tryParseJson(response, Card.class, new Card());
+            onResponse(card);
+        }
     }
 }
