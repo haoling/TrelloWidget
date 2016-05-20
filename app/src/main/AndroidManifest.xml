@@ -44,6 +44,7 @@
         <activity android:name=".activity.AddCardActivity"
             android:excludeFromRecents="true"
             android:label="@string/add_card_dialog_title"
+            android:windowSoftInputMode="stateVisible"
             android:theme="@style/DialogTheme">
             <intent-filter>
                 <action android:name="com.github.oryanmat.trellowidget.addAction" />
