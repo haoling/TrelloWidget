@@ -22,7 +22,6 @@ import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.optionallyHideView
 
 val ADD_ACTION = "com.github.oryanmat.trellowidget.addAction"
 val REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction"
-val WIDGET_ID = "com.github.oryanmat.trellowidget.widgetId"
 private val TRELLO_PACKAGE_NAME = "com.trello"
 private val TRELLO_URL = "https://www.trello.com"
 
@@ -36,7 +35,7 @@ class TrelloWidgetProvider : AppWidgetProvider() {
         super.onReceive(context, intent)
 
         when (intent.action) {
-            REFRESH_ACTION -> context.notifyDataChanged(intent.getIntExtra(WIDGET_ID, 0))
+            REFRESH_ACTION -> context.notifyDataChanged(intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0))
         }
     }
 
