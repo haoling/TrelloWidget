@@ -41,12 +41,6 @@ public class IntentUtil {
         return addIntent;
     }
 
-    static public PendingIntent createViewCardIntentTemplate(Context context)
-    {
-        Intent viewIntentTemplate = new Intent(Intent.ACTION_VIEW);
-        return PendingIntent.getActivity(context, 0, viewIntentTemplate, 0);
-    }
-
     static public Intent createViewCardIntent(Card card)
     {
         return new Intent(Intent.ACTION_VIEW, Uri.parse(card.url));

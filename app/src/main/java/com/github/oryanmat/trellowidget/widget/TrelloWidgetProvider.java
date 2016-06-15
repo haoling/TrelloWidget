@@ -35,6 +35,10 @@ import static com.github.oryanmat.trellowidget.util.color.ColorUtil.dim;
 public class TrelloWidgetProvider extends AppWidgetProvider {
     public static final String ADD_ACTION = "com.github.oryanmat.trellowidget.addAction";
     public static final String REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction";
+    public static final String MOVE_CARD_ACTION = "com.github.oryanmat.trellowidget.moveCardAction";
+
+    public static final String EXTRA_CARD   = "com.github.oryanmat.trellowidget.card";
+
     public static final String TRELLO_PACKAGE_NAME = "com.trello";
     public static final String TRELLO_URL = "https://www.trello.com";
 
@@ -86,7 +90,7 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
         views.setEmptyView(R.id.card_list, R.id.empty_card_list);
         views.setTextColor(R.id.empty_card_list, cardFgColor);
         setBackground(views, R.id.card_frame, cardBgcolor);
-        views.setPendingIntentTemplate(R.id.card_list, getCardPendingIntent(context));
+        views.setPendingIntentTemplate(R.id.card_list, CardListDispatcherService.generateIntentTemplate(context));
         views.setRemoteAdapter(R.id.card_list, getRemoteAdapterIntent(context, appWidgetId));
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -122,11 +126,6 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
             Log.i(T_WIDGET, "Received refresh intent: Refreshing widget contents");
             notifyDataChanged(context, intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0));
         }
-    }
-
-    private PendingIntent getCardPendingIntent(Context context) {
-        // individual card URIs are set in a RemoteViewsFactory.setOnClickFillInIntent
-        return IntentUtil.createViewCardIntentTemplate(context);
     }
 
     private PendingIntent getTitleIntent(Context context, Board board) {

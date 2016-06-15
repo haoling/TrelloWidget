@@ -70,13 +70,18 @@ public class CardRemoteViewFactory implements RemoteViewsService.RemoteViewsFact
         setBadges(views, card);
         setDivider(views);
         setOnClickFillInIntent(views, card);
+        setOnMoveIntent(views, card);
 
         return views;
     }
 
+    private void setOnMoveIntent(RemoteViews views, Card card) {
+        views.setOnClickFillInIntent(R.id.card_move_button, CardListDispatcherService.generateIntent(context, CardListDispatcherService.Method.MOVE, appWidgetId, card));
+    }
+
     private void setOnClickFillInIntent(RemoteViews views, Card card) {
-        Intent intent = IntentUtil.createViewCardIntent(card);
-        views.setOnClickFillInIntent(R.id.card, intent);
+        //Intent intent = IntentUtil.createMoveCardIntent(context, card);//IntentUtil.createViewCardIntent(card);
+        views.setOnClickFillInIntent(R.id.card, CardListDispatcherService.generateIntent(context, CardListDispatcherService.Method.VIEW, appWidgetId, card));
     }
 
     private void setBadges(RemoteViews views, Card card) {

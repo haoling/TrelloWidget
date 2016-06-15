@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/card"
+    android:descendantFocusability="blocksDescendants"
     style="@android:style/Theme.DeviceDefault">
 
     <LinearLayout
@@ -26,7 +27,7 @@
 
     <LinearLayout
         android:id="@+id/badges_layout"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/card_title"
         android:orientation="horizontal"
@@ -105,5 +106,16 @@
         android:layout_marginTop="@dimen/card_padding_bottom"
         android:src="@drawable/divider"
         tools:ignore="ContentDescription" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/card_move_button"
+        android:layout_alignParentStart="false"
+        android:layout_alignTop="@+id/card_title"
+        android:layout_alignRight="@+id/card_title"
+        android:src="@drawable/ic_compare_arrows_white_24dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/move_this_card" />
 
 </RelativeLayout>
