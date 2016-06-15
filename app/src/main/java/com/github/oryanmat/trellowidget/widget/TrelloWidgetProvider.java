@@ -35,7 +35,6 @@ import static com.github.oryanmat.trellowidget.util.color.ColorUtil.dim;
 public class TrelloWidgetProvider extends AppWidgetProvider {
     public static final String ADD_ACTION = "com.github.oryanmat.trellowidget.addAction";
     public static final String REFRESH_ACTION = "com.github.oryanmat.trellowidget.refreshAction";
-    public static final String WIDGET_ID = "com.github.oryanmat.trellowidget.widgetId";
     public static final String TRELLO_PACKAGE_NAME = "com.trello";
     public static final String TRELLO_URL = "https://www.trello.com";
 
@@ -121,7 +120,7 @@ public class TrelloWidgetProvider extends AppWidgetProvider {
 
         if (intent.getAction().equals(REFRESH_ACTION)) {
             Log.i(T_WIDGET, "Received refresh intent: Refreshing widget contents");
-            notifyDataChanged(context, intent.getIntExtra(WIDGET_ID, 0));
+            notifyDataChanged(context, intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0));
         }
     }
 
