@@ -7,15 +7,18 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.RequestFuture;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.github.oryanmat.trellowidget.R;
+import com.github.oryanmat.trellowidget.TrelloWidget;
 import com.github.oryanmat.trellowidget.model.BoardList;
 import com.github.oryanmat.trellowidget.model.Card;
 import com.github.oryanmat.trellowidget.model.CardArray;
 import com.github.oryanmat.trellowidget.model.NewCard;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.oryanmat.trellowidget.TrelloWidget.INTERNAL_PREFS;
@@ -151,6 +154,17 @@ public class TrelloAPIUtil {
         public void onResponse(String response) {
             Card card = Json.tryParseJson(response, Card.class, new Card());
             onResponse(card);
+        }
+
+        public void logError(String message, VolleyError error) {
+            String errorResponse = message + " (" + error.networkResponse.statusCode + ")";
+            try {
+                String responseData = new String(error.networkResponse.data, "UTF-8");
+                errorResponse += ": " + responseData;
+            } catch (UnsupportedEncodingException e) {
+                Log.w(TrelloWidget.T_WIDGET, "Could not decode error.networkResponse.data", e);
+            }
+            Log.e(TrelloWidget.T_WIDGET, errorResponse);
         }
     }
 }

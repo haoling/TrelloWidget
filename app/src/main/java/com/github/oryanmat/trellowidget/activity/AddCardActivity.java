@@ -166,7 +166,8 @@ public class AddCardActivity extends Activity {
 
         @Override
         public void onErrorResponse(VolleyError error) {
-            Log.e(T_WIDGET, "Add Card failed: " + error.networkResponse.data.toString(), error);
+            logError("Add request failed", error);
+
             String message = getString(R.string.add_card_failure);
             if (error.networkResponse.statusCode == 401) {
                 // TODO: Maybe actually open the login dialog?
