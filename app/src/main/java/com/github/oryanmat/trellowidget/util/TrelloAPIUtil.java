@@ -46,6 +46,7 @@ public class TrelloAPIUtil {
     public static final String LIST_CARDS = "lists/%s?cards=open&card_fields=name,badges,labels,url,pos&";
     public static final String CARDS = "cards/?";
     public static final String CARDS_POSITION = "cards/%s/pos?value=%s&";
+    public static final String MOVE_CARD_TO_LIST = "cards/%s/idList?value=%s&";
 
     public static final String CARDS_POSITION_TOP = "top";
     public static final String CARDS_POSITION_BOTTOM = "bottom";
@@ -98,6 +99,10 @@ public class TrelloAPIUtil {
 
     public <L extends Response.Listener<String> & Response.ErrorListener> void repositionCard(Card card, String pos, L listener) {
         putAsync(String.format(String.format(buildURL(), CARDS_POSITION), card.id, pos), listener);
+    }
+
+    public <L extends Response.Listener<String> & Response.ErrorListener> void moveCardToList(Card card, BoardList list, L listener) {
+        putAsync(String.format(String.format(buildURL(), MOVE_CARD_TO_LIST), card.id, list.id), listener);
     }
 
     String get(String url) {
