@@ -10,6 +10,7 @@ public class Card {
     public Badges badges;
     public String url;
     public Label[] labels;
+    public String pos;
 
     @Override
     public String toString()

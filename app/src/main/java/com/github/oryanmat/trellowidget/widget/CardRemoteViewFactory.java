@@ -1,7 +1,6 @@
 package com.github.oryanmat.trellowidget.widget;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
@@ -17,7 +16,6 @@ import com.github.oryanmat.trellowidget.model.Card;
 import com.github.oryanmat.trellowidget.model.CardArray;
 import com.github.oryanmat.trellowidget.model.Label;
 import com.github.oryanmat.trellowidget.util.DateTimeUtil;
-import com.github.oryanmat.trellowidget.util.IntentUtil;
 import com.github.oryanmat.trellowidget.util.PrefUtil;
 import com.github.oryanmat.trellowidget.util.TrelloAPIUtil;
 import com.github.oryanmat.trellowidget.util.color.LabelColors;
@@ -70,18 +68,21 @@ public class CardRemoteViewFactory implements RemoteViewsService.RemoteViewsFact
         setBadges(views, card);
         setDivider(views);
         setOnClickFillInIntent(views, card);
-        setOnMoveIntent(views, card);
+        setupMoveButton(views, card, position);
 
         return views;
     }
 
-    private void setOnMoveIntent(RemoteViews views, Card card) {
-        views.setOnClickFillInIntent(R.id.card_move_button, CardListDispatcherService.generateIntent(context, CardListDispatcherService.Method.MOVE, appWidgetId, card));
+    private void setupMoveButton(RemoteViews views, Card card, int position) {
+        String prevPos = TrelloAPIUtil.getPrevPos(cards, position);
+        String nextPos = TrelloAPIUtil.getNextPos(cards, position);
+
+        setImageViewColor(views, R.id.card_move_button, color);
+        views.setOnClickFillInIntent(R.id.card_move_button, CardListDispatcherService.generateMoveActivityIntent(context, appWidgetId, card, prevPos, nextPos));
     }
 
     private void setOnClickFillInIntent(RemoteViews views, Card card) {
-        //Intent intent = IntentUtil.createMoveCardIntent(context, card);//IntentUtil.createViewCardIntent(card);
-        views.setOnClickFillInIntent(R.id.card, CardListDispatcherService.generateIntent(context, CardListDispatcherService.Method.VIEW, appWidgetId, card));
+        views.setOnClickFillInIntent(R.id.card, CardListDispatcherService.generateViewIntent(context, appWidgetId, card));
     }
 
     private void setBadges(RemoteViews views, Card card) {

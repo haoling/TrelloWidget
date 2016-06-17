@@ -41,6 +41,20 @@ public class CardListDispatcherService extends IntentService {
         return intent;
     }
 
+    public static Intent generateViewIntent(Context context, int appWidgetId, Card card)
+    {
+        return generateIntent(context, Method.VIEW, appWidgetId, card);
+    }
+
+
+    public static Intent generateMoveActivityIntent(Context context, int appWidgetId, Card card, String prevPos, String nextPos) // And board list?
+    {
+        Intent intent = generateIntent(context, Method.MOVE,appWidgetId, card);
+        intent.putExtra(MoveCardActivity.EXTRA_NEXTPOS, nextPos);
+        intent.putExtra(MoveCardActivity.EXTRA_PREVPOS, prevPos);
+        return intent;
+    }
+
     public static PendingIntent generateIntentTemplate(Context context)
     {
         Intent intent = new Intent(ACTION_CARD_LIST, Uri.EMPTY, context, CardListDispatcherService.class);
@@ -54,7 +68,6 @@ public class CardListDispatcherService extends IntentService {
         Bundle extras = intent.getExtras();
         Card card = Card.parse(extras.getString(TrelloWidgetProvider.EXTRA_CARD));
         Method method = Method.valueOf(extras.getString(EXTRA_METHOD));
-        int appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID);
 
         Log.d(TrelloWidget.T_WIDGET, "Dispatching a " + extras.getString(EXTRA_METHOD) + " request for card " + card.toString());
         Intent nextIntent = null;
@@ -63,7 +76,7 @@ public class CardListDispatcherService extends IntentService {
                 nextIntent = IntentUtil.createViewCardIntent(card);
                 break;
             case MOVE:
-                nextIntent = MoveCardActivity.createMoveCardIntent(context, card, appWidgetId);
+                nextIntent = MoveCardActivity.createMoveCardIntent(context, extras);
                 break;
         }
         if (nextIntent != null) {
