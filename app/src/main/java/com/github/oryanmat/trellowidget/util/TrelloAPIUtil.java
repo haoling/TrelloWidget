@@ -19,6 +19,7 @@ import com.github.oryanmat.trellowidget.model.CardArray;
 import com.github.oryanmat.trellowidget.model.NewCard;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.github.oryanmat.trellowidget.TrelloWidget.INTERNAL_PREFS;
@@ -42,8 +43,12 @@ public class TrelloAPIUtil {
     public static final String USER = "members/me?fields=fullName,username&";
     public static final String BOARDS = "members/me/boards?filter=open&fields=id,name,url" +
             "&lists=open&list_fields=id,name&";
-    public static final String LIST_CARDS = "lists/%s?cards=open&card_fields=name,badges,labels,url&";
+    public static final String LIST_CARDS = "lists/%s?cards=open&card_fields=name,badges,labels,url,pos&";
     public static final String CARDS = "cards/?";
+    public static final String CARDS_POSITION = "cards/%s/pos?value=%s&";
+
+    public static final String CARDS_POSITION_TOP = "top";
+    public static final String CARDS_POSITION_BOTTOM = "bottom";
 
     public static TrelloAPIUtil instance;
 
@@ -91,6 +96,10 @@ public class TrelloAPIUtil {
         postAsync(String.format(buildURL(), CARDS), json, listener);
     }
 
+    public <L extends Response.Listener<String> & Response.ErrorListener> void repositionCard(Card card, String pos, L listener) {
+        putAsync(String.format(String.format(buildURL(), CARDS_POSITION), card.id, pos), listener);
+    }
+
     String get(String url) {
         return syncRequest(url, null, Request.Method.GET);
     }
@@ -123,6 +132,10 @@ public class TrelloAPIUtil {
         requestAsync(url, data, Request.Method.POST, listener, listener);
     }
 
+    public <L extends Response.Listener<String> & Response.ErrorListener> void putAsync(String url, L listener) {
+        requestAsync(url, null, Request.Method.PUT, listener, listener);
+    }
+
     // TODO: Since we're dealing exclusively with JSON here, maybe it would be easier to start using JsonObjectRequest objcets as opposed to plain StringRequest objects
     public void requestAsync(String url, final String data, int method, Response.Listener<String> listener, Response.ErrorListener errorListener) {
         StringRequest request = new StringRequest(method, url, listener, errorListener) {
@@ -141,6 +154,48 @@ public class TrelloAPIUtil {
             }
         };
         getRequestQueue().add(request);
+    }
+
+    /**
+     * Compute the position value needed to move a given card up by one in the card list
+     *
+     * @param cards The list of cards
+     * @param position The position in the list of the card we want to move up by one
+     * @return Empty String if this is at the top of the list, CARDS_POSITION_TOP if the only way up is to go to the top, or the String representation of the value that should be used to move the card up by 1
+     */
+    public static String getPrevPos(List<Card> cards, int position) {
+        // Trello's API is odd - To move a card up by one, you need to find the position of the previous card and the one previous to that, and find a number in between.
+        String prevPos = "";
+        if (position > 1) {
+            Double onePrev = Double.parseDouble(cards.get(position - 1).pos);
+            Double twoPrev = Double.parseDouble(cards.get(position - 2).pos);
+            Double halfWay = onePrev + ((twoPrev - onePrev) / 2);
+            prevPos = halfWay.toString();
+        } else if (position == 1) {
+            prevPos = CARDS_POSITION_TOP;
+        }
+        return prevPos;
+    }
+
+    /**
+     * Compute the position value needed to move a given card down by one in the card list
+     *
+     * @param cards The list of cards
+     * @param position The position in the list of the card we want to move down by one
+     * @return Empty String if this is at the bottom of the list, CARDS_POSITION_BOTTOM if the only way down is to go to the bottom, or the String representation of the value that should be used to move the card down by 1
+     */
+    public static String getNextPos(List<Card> cards, int position) {
+        // Trello's API is odd - To move a card down by one, you need to find the position of the next card and the one after that, and find a number in between.
+        String nextPos = "";
+        if (position < (cards.size() - 2)) {
+            Double oneNext = Double.parseDouble(cards.get(position + 1).pos);
+            Double twoNext = Double.parseDouble(cards.get(position + 2).pos);
+            Double halfWay = oneNext + ((twoNext - oneNext) / 2);
+            nextPos = halfWay.toString();
+        } else if (position < (cards.size() - 1)) {
+            nextPos = TrelloAPIUtil.CARDS_POSITION_BOTTOM;
+        }
+        return nextPos;
     }
 
     /**
