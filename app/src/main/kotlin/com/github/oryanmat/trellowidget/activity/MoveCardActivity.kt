@@ -7,15 +7,17 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
 import android.widget.Toast
 import com.android.volley.VolleyError
 import com.github.oryanmat.trellowidget.R
 import com.github.oryanmat.trellowidget.T_WIDGET
+import com.github.oryanmat.trellowidget.model.BoardList
 import com.github.oryanmat.trellowidget.model.Card
-import com.github.oryanmat.trellowidget.util.CARDS_POSITION_BOTTOM
-import com.github.oryanmat.trellowidget.util.CARDS_POSITION_TOP
-import com.github.oryanmat.trellowidget.util.TrelloAPIUtil
-import com.github.oryanmat.trellowidget.util.createRefreshIntent
+import com.github.oryanmat.trellowidget.util.*
 import com.github.oryanmat.trellowidget.widget.EXTRA_CARD
 import com.github.oryanmat.trellowidget.widget.MOVE_CARD_ACTION
 import kotlinx.android.synthetic.main.activity_move_card.*
@@ -61,10 +63,6 @@ class MoveCardActivity : Activity() {
             isEnabled = (!prevPos.isEmpty() && prevPos != CARDS_POSITION_TOP)
             setOnClickListener { moveTo(prevPos) }
         }
-        with (move_card_list_button) {
-            isEnabled = false // TODO: Actually implement this!
-            setOnClickListener { moveToList() }
-        }
         with (move_card_down_button) {
             isEnabled = (!nextPos.isEmpty() && nextPos != CARDS_POSITION_BOTTOM)
             setOnClickListener { moveTo(nextPos) }
@@ -72,6 +70,22 @@ class MoveCardActivity : Activity() {
         with (move_card_bottom_button) {
             isEnabled = !nextPos.isEmpty()
             setOnClickListener { moveTo(CARDS_POSITION_BOTTOM) }
+        }
+
+        with (move_card_list_button) {
+            isEnabled = false
+            setOnClickListener { moveToList() }
+        }
+        with (move_card_list_selection) {
+            // TODO: Consider fetching these in case the cached values are out of date
+            val board = getBoard(appWidgetId)
+            val list = getList(appWidgetId)
+            val adapter = ArrayAdapter(this@MoveCardActivity, android.R.layout.simple_spinner_item, board.lists)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            setAdapter(adapter)
+            val selectedIndex = board.lists.indexOf(list)
+            setSelection(if (selectedIndex > -1) selectedIndex else 0)
+            onItemSelectedListener = ListSelectionListener(move_card_list_button, selectedIndex)
         }
     }
 
@@ -86,8 +100,14 @@ class MoveCardActivity : Activity() {
     }
 
     private fun moveToList() {
-        Log.d(T_WIDGET, "Would move card $card to ... some other list")
-        close(false)
+        val destination = move_card_list_selection.selectedItem as BoardList
+        if (destination.id == "-1") {
+            Log.w(T_WIDGET, "No destination board: Not moving")
+            close(false)
+        } else {
+            Log.d(T_WIDGET, "Moving card $card to ${destination.name} (${destination.id})")
+            TrelloAPIUtil.instance.moveCardToList(card, destination, MoveListener())
+        }
     }
 
     private fun close(needsReload: Boolean) {
@@ -127,5 +147,19 @@ class MoveCardActivity : Activity() {
             })
             Toast.makeText(this@MoveCardActivity, message, Toast.LENGTH_LONG).show()
         }
+    }
+
+    inner class ListSelectionListener(
+            val goButton: ImageButton,
+            val currentSelection: Int
+    ): AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+            goButton.isEnabled = false
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            goButton.isEnabled = position != currentSelection
+        }
+
     }
 }
