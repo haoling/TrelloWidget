@@ -8,13 +8,19 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.github.oryanmat.trellowidget.R;
 import com.github.oryanmat.trellowidget.TrelloWidget;
+import com.github.oryanmat.trellowidget.model.Board;
+import com.github.oryanmat.trellowidget.model.BoardList;
 import com.github.oryanmat.trellowidget.model.Card;
 import com.github.oryanmat.trellowidget.util.IntentUtil;
 import com.github.oryanmat.trellowidget.util.TrelloAPIUtil;
@@ -89,16 +95,6 @@ public class MoveCardActivity extends Activity {
             });
         }
 
-        button = (Button)findViewById(R.id.move_card_list_button);
-        // TODO: Actually implement this...
-        button.setEnabled(false);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                moveToList();
-            }
-        });
-
         button = (Button) findViewById(R.id.move_card_down_button);
         if (nextPos.isEmpty()) {
             button.setEnabled(false);
@@ -123,6 +119,53 @@ public class MoveCardActivity extends Activity {
                     moveToBottom();
                 }
             });
+        }
+
+        ImageButton listMove = (ImageButton)findViewById(R.id.move_card_list_button);
+        listMove.setEnabled(false);
+        listMove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                moveToList();
+            }
+        });
+
+        Spinner listSelection = (Spinner)findViewById(R.id.move_card_list_selection);
+        // TODO: Consider re-fetching this instead of using the cached values, in case these are not current?
+        Board board = TrelloWidget.getBoard(this, appWidgetId);
+        ArrayAdapter<BoardList> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, board.lists);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        listSelection.setAdapter(adapter);
+        int selectedIndex = ConfigActivity.getSelectedIndex(board.lists, TrelloWidget.getList(this, appWidgetId));
+        // TODO: Consider making 'selectedIndex + 1' the default selection?
+        if (selectedIndex > -1) {
+            listSelection.setSelection(selectedIndex);
+        }
+        listSelection.setOnItemSelectedListener(new ListSelectionListener(listMove, selectedIndex));
+    }
+
+    private class ListSelectionListener implements AdapterView.OnItemSelectedListener {
+        private ImageButton goButton;
+        private int currentPosition;
+
+        ListSelectionListener(ImageButton button, int currentSelection) {
+            goButton = button;
+            currentPosition = currentSelection;
+        }
+
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (position == currentPosition) {
+                goButton.setEnabled(false);
+            } else {
+                goButton.setEnabled(true);
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            goButton.setEnabled(false);
         }
     }
 
@@ -160,8 +203,15 @@ public class MoveCardActivity extends Activity {
 
     protected void moveToList()
     {
-        Log.d(TrelloWidget.T_WIDGET, "Would move card " + card.toString() + " to ... some other list");
-        close(false);
+        Spinner listSelection = (Spinner)findViewById(R.id.move_card_list_selection);
+        BoardList destination = (BoardList)listSelection.getSelectedItem();
+        if (destination.id.equals("-1")) {
+            Log.d(TrelloWidget.T_WIDGET, "Could not find destination board - Not moving");
+            close(false);
+        } else {
+            Log.d(TrelloWidget.T_WIDGET, "Moving card " + card.toString() + " to " + destination.name + " (" + destination.id + ")");
+            TrelloAPIUtil.instance.moveCardToList(card, destination, new MoveListener());
+        }
     }
 
     private class MoveListener extends TrelloAPIUtil.CardResponseListener {
