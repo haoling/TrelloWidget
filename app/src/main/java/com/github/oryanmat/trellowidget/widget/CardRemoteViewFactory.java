@@ -29,6 +29,7 @@ import static android.graphics.Color.alpha;
 import static android.graphics.Color.blue;
 import static android.graphics.Color.green;
 import static android.graphics.Color.red;
+import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.optionallyHideView;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setImage;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setImageViewColor;
 import static com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setTextView;
@@ -79,6 +80,7 @@ public class CardRemoteViewFactory implements RemoteViewsService.RemoteViewsFact
 
         setImageViewColor(views, R.id.card_move_button, color);
         views.setOnClickFillInIntent(R.id.card_move_button, CardListDispatcherService.generateMoveActivityIntent(context, appWidgetId, card, prevPos, nextPos));
+        optionallyHideView(views, context, R.id.card_move_button, R.string.pref_move_button_key);
     }
 
     private void setOnClickFillInIntent(RemoteViews views, Card card) {
