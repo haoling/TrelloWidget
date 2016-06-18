@@ -14,6 +14,7 @@ import com.github.oryanmat.trellowidget.model.BoardList
 import com.github.oryanmat.trellowidget.model.Card
 import com.github.oryanmat.trellowidget.model.Label
 import com.github.oryanmat.trellowidget.util.DateTimeUtil
+import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.optionallyHideView
 import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setImage
 import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setImageViewColor
 import com.github.oryanmat.trellowidget.util.RemoteViewsUtil.setTextView
@@ -147,6 +148,7 @@ class CardRemoteViewFactory(private val context: Context,
         val nextPos = TrelloAPIUtil.getNextPos(cards, position)
         setImageViewColor(views, R.id.card_move_button, color.lightDim())
         views.setOnClickFillInIntent(R.id.card_move_button, CardListDispatcherService.generateMoveActivityIntent(context, appWidgetId, card, prevPos, nextPos))
+        optionallyHideView(views, context, R.id.card_move_button, R.string.pref_move_button_key)
     }
 
     private fun setDivider(views: RemoteViews) = setImageViewColor(views, R.id.list_item_divider, color)
