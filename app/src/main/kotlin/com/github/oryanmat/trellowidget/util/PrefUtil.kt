@@ -24,6 +24,9 @@ internal @ColorInt fun Context.getCardForegroundColor() = getColor(
         getString(R.string.pref_fore_color_key),
         resources.getInteger(R.integer.pref_fore_color_default))
 
+internal fun Context.isNoTitle() =
+        isEnabled(R.string.pref_no_title_key)
+
 internal fun Context.isTwoLineTitle() =
         isEnabled(R.string.pref_two_line_title_key)
 

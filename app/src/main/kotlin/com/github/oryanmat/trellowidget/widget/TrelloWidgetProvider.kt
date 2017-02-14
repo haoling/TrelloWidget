@@ -44,6 +44,9 @@ class TrelloWidgetProvider : AppWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.trello_widget)
         updateTitleBar(appWidgetId, context, views)
         updateCardList(appWidgetId, context, views)
+        if (context.isNoTitle()) {
+            hideView(views, R.id.title_bar);
+        }
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
