@@ -46,6 +46,8 @@ class TrelloWidgetProvider : AppWidgetProvider() {
         updateCardList(appWidgetId, context, views)
         if (context.isNoTitle()) {
             hideView(views, R.id.title_bar);
+        } else {
+            showView(views, R.id.title_bar);
         }
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
